@@ -4,23 +4,24 @@ import (
 	"context"
 
 	"main/db/ent"
+	"main/db/ent/user"
 	"main/db/entity"
 )
 
-func NewUserStorage(client *ent.Client) user {
-	return user{
+func NewUserStorage(client *ent.Client) userStorage {
+	return userStorage{
 		Client: client,
 	}
 }
 
-type user struct {
+type userStorage struct {
 	Client *ent.Client
 }
 
-func (u user) Create(ctx context.Context, user entity.UserModel) error {
+func (u userStorage) Create(ctx context.Context, user entity.UserModel) error {
 	create := u.Client.User.Create().
 		SetFullName(user.FullName).
-		SetPassword(user.PasswordHash).
+		SetPasswordHash(user.PasswordHash).
 		SetEmail(user.Email).
 		SetUserCategoryID(user.UserCategoryID)
 
@@ -32,7 +33,7 @@ func (u user) Create(ctx context.Context, user entity.UserModel) error {
 	return nil
 }
 
-func (u user) Get(ctx context.Context, userID int) (entity.UserModel, error) {
+func (u userStorage) Get(ctx context.Context, userID int) (entity.UserModel, error) {
 	user, err := u.Client.User.Get(ctx, userID)
 	if err != nil {
 		return entity.UserModel{}, err
@@ -44,4 +45,24 @@ func (u user) Get(ctx context.Context, userID int) (entity.UserModel, error) {
 	userData.UserCategoryID = user.UserCategoryID
 
 	return userData, nil
+}
+
+func (u userStorage) GetByLogin(ctx context.Context, login string) (entity.UserModel, error) {
+	userData, err := u.Client.User.Query().
+		Where(user.UsernameEQ(login)).
+		WithUserCategory().
+		Only(ctx)
+	if err != nil {
+		return entity.UserModel{}, err
+	}
+
+	var user entity.UserModel
+
+	user.FullName = userData.FullName
+	user.Username = userData.Username
+	user.Email = userData.Email
+	user.PasswordHash = userData.PasswordHash
+	user.UserCategoryID = userData.UserCategoryID
+
+	return user, nil
 }

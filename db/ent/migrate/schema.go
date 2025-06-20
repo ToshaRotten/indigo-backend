@@ -278,6 +278,7 @@ var (
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "full_name", Type: field.TypeString, Nullable: true, Size: 255},
+		{Name: "username", Type: field.TypeString, Nullable: true, Size: 255},
 		{Name: "email", Type: field.TypeString, Nullable: true, Size: 255},
 		{Name: "password_hash", Type: field.TypeString, Nullable: true, Size: 255},
 		{Name: "phone_number", Type: field.TypeString, Nullable: true, Size: 255},
@@ -291,7 +292,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "users_user_categories_user_category_user",
-				Columns:    []*schema.Column{UsersColumns[5]},
+				Columns:    []*schema.Column{UsersColumns[6]},
 				RefColumns: []*schema.Column{UserCategoriesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

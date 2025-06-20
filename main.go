@@ -1,9 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/cors"
+
+	"main/db/seed"
 	"main/db/wrapper"
+	"main/domain"
 )
 
 func main() {
@@ -14,7 +20,22 @@ func main() {
 		fmt.Println(err)
 	}
 
-	db.CloseConnection()
+	domain.Initialize(db)
+	seed.SeedDatabase(context.Background(), db.Client)
+
+	app := fiber.New()
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3001"},
+		AllowMethods:     []string{"GET", "POST", "HEAD", "PUT", "DELETE", "PATCH"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		AllowCredentials: true,
+	}))
+
+	// TODO: use a normal middleware
+	app.Use(func(c fiber.Ctx) error {
+		fmt.Println(c.Request())
+		return c.Next()
+	})
 
 	//domain.Initialize(db)
 	//

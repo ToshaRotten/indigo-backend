@@ -30,7 +30,6 @@ func Registration(c fiber.Ctx) error {
 
 	user := new(entity.UserModel)
 
-	user.Password = registrationRequest.Password
 	user.Email = registrationRequest.Email
 	hash, err := domain.HashPassword(registrationRequest.Password)
 	if err != nil {
