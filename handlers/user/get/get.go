@@ -25,3 +25,12 @@ func (Getter) Get(c fiber.Ctx) error {
 
 	return c.JSON(user)
 }
+
+func (g Getter) GetAll(c fiber.Ctx) error {
+	users, err := domain.User.GetAll()
+	if err != nil {
+		return c.SendString(fmt.Sprintf("wrong request: %s", err.Error()))
+	}
+
+	return c.JSON(users)
+}

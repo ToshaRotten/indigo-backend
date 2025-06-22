@@ -47,6 +47,28 @@ func (u userStorage) Get(ctx context.Context, userID int) (entity.UserModel, err
 	return userData, nil
 }
 
+func (u userStorage) GetAll(ctx context.Context) ([]entity.UserModel, error) {
+	users, err := u.Client.User.Query().
+		WithUserCategory().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var userData []entity.UserModel
+	for _, user := range users {
+		var userModel entity.UserModel
+
+		userModel.FullName = user.FullName
+		userModel.Email = user.Email
+		userModel.UserCategoryID = user.UserCategoryID
+
+		userData = append(userData, userModel)
+	}
+
+	return userData, nil
+}
+
 func (u userStorage) GetByLogin(ctx context.Context, login string) (entity.UserModel, error) {
 	userData, err := u.Client.User.Query().
 		Where(user.UsernameEQ(login)).

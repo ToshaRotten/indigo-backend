@@ -16,6 +16,7 @@ type Remover interface {
 
 type Getter interface {
 	Get(c fiber.Ctx) error
+	GetAll(c fiber.Ctx) error
 }
 
 type EntityController struct {

@@ -31,6 +31,29 @@ func (p productStorage) Get(ctx context.Context, productID int) (entity.ProductM
 		MinStorageTemp:     product.MinStorageTemp,
 		MaxStorageTemp:     product.MaxStorageTemp,
 		ShelfLife:          product.ShelfLife,
+		Picture:            product.Picture,
+	}
+
+	return productData, nil
+}
+
+func (p productStorage) GetAll(ctx context.Context) ([]entity.ProductModel, error) {
+	products, err := p.Client.Product.Query().All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var productData []entity.ProductModel
+	for _, product := range products {
+		productData = append(productData, entity.ProductModel{
+			Name:               product.Name,
+			Weight:             product.Weight,
+			ProductComposition: product.ProductComposition,
+			MinStorageTemp:     product.MinStorageTemp,
+			MaxStorageTemp:     product.MaxStorageTemp,
+			ShelfLife:          product.ShelfLife,
+			Picture:            product.Picture,
+		})
 	}
 
 	return productData, nil

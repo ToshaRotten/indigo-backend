@@ -151,16 +151,18 @@ func SeedDatabase(ctx context.Context, client *ent.Client) {
 			MinStorageTemp:     0,
 			MaxStorageTemp:     5,
 			ShelfLife:          5,
+			Picture:            "azu_photo.png",
 			ProductCategoryID:  butcheringProductCategory.ID,
 			TypeOfPackagingID:  bagPackagingType.ID,
 		},
 		{
-			Name:               `Азу`,
+			Name:               `Печень индейки`,
 			Weight:             1,
 			ProductComposition: "",
 			MinStorageTemp:     0,
 			MaxStorageTemp:     5,
 			ShelfLife:          5,
+			Picture:            "fork_photo.png",
 			ProductCategoryID:  butcheringProductCategory.ID,
 			TypeOfPackagingID:  bagPackagingType.ID,
 		},
@@ -173,6 +175,7 @@ func SeedDatabase(ctx context.Context, client *ent.Client) {
 				builder := client.Product.Create().
 					SetName(productToCreate.Name).
 					SetWeight(productToCreate.Weight).
+					SetPicture(productToCreate.Picture).
 					SetProductComposition(productToCreate.ProductComposition).
 					SetMinStorageTemp(productToCreate.MinStorageTemp).
 					SetMaxStorageTemp(productToCreate.MaxStorageTemp)
@@ -204,6 +207,12 @@ func SeedDatabase(ctx context.Context, client *ent.Client) {
 		{
 			Name: "user",
 		},
+		{
+			Name: "storekeeper",
+		},
+		{
+			Name: "manager",
+		},
 	}
 
 	for _, userCategoryToCreate := range userCategoriesToCreate {
@@ -234,8 +243,10 @@ func SeedDatabase(ctx context.Context, client *ent.Client) {
 	log.Println("Создание пользователей")
 
 	const (
-		userCategoryAdmin = 1
-		userCategoryUser  = 2
+		userCategoryAdmin       = 1
+		userCategoryUser        = 2
+		userCategoryStorekeeper = 3
+		userCategoryManager     = 4
 	)
 
 	usersToCreate := []struct {
@@ -258,6 +269,20 @@ func SeedDatabase(ctx context.Context, client *ent.Client) {
 			Password:     "user", // Use a strong password in production!
 			Username:     "user",
 			UserCategory: userCategoryUser,
+		},
+		{
+			FullName:     "Мария",
+			Email:        "storekeeper@example.com",
+			Password:     "storekeeper", // Use a strong password in production!
+			Username:     "storekeeper",
+			UserCategory: userCategoryStorekeeper,
+		},
+		{
+			FullName:     "Игорь",
+			Email:        "manager@example.com",
+			Password:     "manager", // Use a strong password in production!
+			Username:     "manager",
+			UserCategory: userCategoryManager,
 		},
 	}
 

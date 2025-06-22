@@ -17,6 +17,7 @@ import (
 	"main/handlers/middleware"
 	"main/handlers/product"
 	"main/handlers/status"
+	"main/handlers/user"
 )
 
 func main() {
@@ -62,17 +63,8 @@ func main() {
 	authApi.Post("/user/register", auth.Registration)
 	api.Use(middleware.JwtMiddleware)
 
-	// // User
-	// userController := user.NewUserController()
-	//
-	// api.Post("/user", userController.Create)
-	// api.Delete("/user", userController.Remove)
-	// api.Get("/user/:id", userController.Get)
-	// api.Put("/user", userController.Update)
-	//
-	// Service auth
-	api.Post("/user/login", auth.Login)
-	api.Post("/user/register", auth.Registration)
+	user := user.NewUserController()
+	api.Get("/users", user.GetAll)
 	//
 	// Project
 	product := product.NewProductController()
@@ -81,6 +73,7 @@ func main() {
 	api.Get("/product/:id", product.Get)
 	api.Put("/product", product.Update)
 	api.Delete("/product/:id", product.Remove)
+	api.Get("/products", product.GetAll)
 
 	log.Fatal(app.Listen(":3000"))
 }

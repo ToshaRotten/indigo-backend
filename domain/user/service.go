@@ -23,6 +23,15 @@ func (s Service) Get(userID int) (entity.UserModel, error) {
 	return user, nil
 }
 
+func (s Service) GetAll() ([]entity.UserModel, error) {
+	users, err := s.storage.GetAll(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
 func (s Service) GetByLogin(login string) (entity.UserModel, error) {
 	user, err := s.storage.GetByLogin(context.Background(), login)
 	if err != nil {
