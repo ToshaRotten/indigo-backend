@@ -7,11 +7,11 @@ type Product interface {
 type ProductModel struct {
 	ID                 int
 	Name               string
-	Weight             float32
-	ProductComposition float32
-	MinStorageTemp     float32
-	MaxStorageTemp     float32
-	ShelfLife          float32
+	Weight             float64
+	ProductComposition string
+	MinStorageTemp     int
+	MaxStorageTemp     int
+	ShelfLife          string
 	Picture            string
 	ProductCategoryID  int
 	TypeOfPackagingID  int

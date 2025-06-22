@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"main/db/ent/address"
 	"main/db/ent/card"
@@ -43,14 +44,6 @@ func (uc *UserCreate) SetNillableFullName(s *string) *UserCreate {
 // SetUsername sets the "username" field.
 func (uc *UserCreate) SetUsername(s string) *UserCreate {
 	uc.mutation.SetUsername(s)
-	return uc
-}
-
-// SetNillableUsername sets the "username" field if the given value is not nil.
-func (uc *UserCreate) SetNillableUsername(s *string) *UserCreate {
-	if s != nil {
-		uc.SetUsername(*s)
-	}
 	return uc
 }
 
@@ -258,6 +251,9 @@ func (uc *UserCreate) check() error {
 		if err := user.FullNameValidator(v); err != nil {
 			return &ValidationError{Name: "full_name", err: fmt.Errorf(`ent: validator failed for field "User.full_name": %w`, err)}
 		}
+	}
+	if _, ok := uc.mutation.Username(); !ok {
+		return &ValidationError{Name: "username", err: errors.New(`ent: missing required field "User.username"`)}
 	}
 	if v, ok := uc.mutation.Username(); ok {
 		if err := user.UsernameValidator(v); err != nil {

@@ -13,6 +13,19 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
+type userData struct {
+	ID         int    `json:"id"`
+	FullName   string `json:"full_name"`
+	Username   string `json:"username"`
+	Email      string `json:"email"`
+	CategoryID int    `json:"category_id"`
+}
+
+type LoginResponse struct {
+	User  userData `json:"userData"`
+	Token string   `json:"token"`
+}
+
 func Login(c fiber.Ctx) error {
 	var request LoginRequest
 
@@ -20,17 +33,13 @@ func Login(c fiber.Ctx) error {
 		return err
 	}
 
-	hash, err := domain.HashPassword(request.Password)
-	if err != nil {
-		return c.SendString(fmt.Sprintf("hash of password is not created %s", err.Error()))
-	}
-
 	user, err := domain.User.GetByLogin(request.Login)
 	if err != nil {
 		return c.SendString(fmt.Sprintf("user not found: %s", err.Error()))
 	}
 
-	if hash == user.PasswordHash && request.Login == user.Username {
+	if domain.CheckPasswordHash(request.Password, user.PasswordHash) &&
+		request.Login == user.Username {
 		// Если учетные данные верны, генерируем JWT
 		token, err := domain.CreateToken(user.ID, user.Username)
 		if err != nil {
@@ -39,7 +48,20 @@ func Login(c fiber.Ctx) error {
 		}
 
 		fmt.Printf("token: %s", token)
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{"token": token})
+
+		response := LoginResponse{
+			User: userData{
+				ID:         user.ID,
+				FullName:   user.FullName,
+				Email:      user.Email,
+				Username:   user.Username,
+				CategoryID: user.UserCategoryID,
+			},
+			Token: token,
+		}
+
+		return c.Status(fiber.StatusOK).JSON(response)
 	}
 	return c.SendString("login error")
 }
+

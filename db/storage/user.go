@@ -66,3 +66,12 @@ func (u userStorage) GetByLogin(ctx context.Context, login string) (entity.UserM
 
 	return user, nil
 }
+
+func (u userStorage) Delete(ctx context.Context, userID int) error {
+	remove := u.Client.User.DeleteOneID(userID)
+	err := remove.Exec(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}

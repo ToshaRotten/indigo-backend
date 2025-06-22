@@ -9,8 +9,8 @@ import (
 
 // JWT Secret Key (используйте сильную случайную строку в продакшене!)
 const (
-	jwtSecret    = "supersecretjwtkey" // В продакшене это должна быть переменная окружения
-	jwtExpiresIn = time.Hour * 24      // 24 часа
+	JwtSecret    = "supersecretjwtkey" // В продакшене это должна быть переменная окружения
+	JwtExpiresIn = time.Hour * 24      // 24 часа
 )
 
 // hashPassword хеширует пароль с использованием bcrypt
@@ -30,11 +30,11 @@ func CreateToken(userID int, username string) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id":  userID,
 		"username": username,
-		"exp":      time.Now().Add(jwtExpiresIn).Unix(), // Срок действия токена
+		"exp":      time.Now().Add(JwtExpiresIn).Unix(), // Срок действия токена
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	t, err := token.SignedString([]byte(jwtSecret))
+	t, err := token.SignedString([]byte(JwtSecret))
 	if err != nil {
 		return "", err
 	}

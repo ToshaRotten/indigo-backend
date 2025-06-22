@@ -278,6 +278,7 @@ func SeedDatabase(ctx context.Context, client *ent.Client) {
 
 				builder := client.User.Create().
 					SetFullName(userData.FullName).
+					SetUsername(userData.Username).
 					SetEmail(userData.Email).
 					SetPasswordHash(hashedPassword).SetUserCategoryID(userData.UserCategory)
 

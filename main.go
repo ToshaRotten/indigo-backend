@@ -3,13 +3,20 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/cors"
+	"github.com/gofiber/fiber/v3/middleware/static"
 
 	"main/db/seed"
 	"main/db/wrapper"
 	"main/domain"
+	"main/handlers/auth"
+	"main/handlers/middleware"
+	"main/handlers/product"
+	"main/handlers/status"
 )
 
 func main() {
@@ -37,21 +44,24 @@ func main() {
 		return c.Next()
 	})
 
-	//domain.Initialize(db)
-	//
-	// app := fiber.New()
-	//
-	// // TODO: use a normal middleware
-	// app.Use(func(c fiber.Ctx) error {
-	// 	fmt.Println(c.Request())
-	// 	return c.Next()
-	// })
-	//
-	// api := app.Group("/api")
-	//
-	// // Service
-	// api.Get("/status", status.Status)
-	//
+	domain.Initialize(db)
+
+	api := app.Group("/api")
+	app.Get("/images*", static.New("", static.Config{
+		FS:     os.DirFS("uploads/images"),
+		Browse: true,
+	}))
+
+	// Service
+	api.Get("/status", status.Status)
+
+	authApi := app.Group("/auth")
+
+	// Service auth
+	authApi.Post("/user/login", auth.Login)
+	authApi.Post("/user/register", auth.Registration)
+	api.Use(middleware.JwtMiddleware)
+
 	// // User
 	// userController := user.NewUserController()
 	//
@@ -60,17 +70,17 @@ func main() {
 	// api.Get("/user/:id", userController.Get)
 	// api.Put("/user", userController.Update)
 	//
-	// // Service auth
-	// api.Post("/user/login", auth.Login)
-	// api.Post("/user/register", auth.Registration)
+	// Service auth
+	api.Post("/user/login", auth.Login)
+	api.Post("/user/register", auth.Registration)
 	//
-	// // Project
-	// project := project.NewProjectController()
-	//
-	// api.Post("/project", project.Create)
-	// api.Get("/project/:id", project.Get)
-	// api.Put("/project", project.Update)
-	// api.Delete("/project/:id", project.Remove)
-	//
-	// log.Fatal(app.Listen(":3000"))
+	// Project
+	product := product.NewProductController()
+
+	api.Post("/product", product.Create)
+	api.Get("/product/:id", product.Get)
+	api.Put("/product", product.Update)
+	api.Delete("/product/:id", product.Remove)
+
+	log.Fatal(app.Listen(":3000"))
 }
